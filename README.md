@@ -1,1 +1,1 @@
-# rust-mock-api-service
+# sample-rust-api-service

@@ -1,5 +1,5 @@
 [package]
-name = "rust-mock-api-service"
+name = "sample-rust-api-service"
 version = "0.1.0"
 edition = "2018"
 

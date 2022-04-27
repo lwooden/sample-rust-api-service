@@ -1,14 +1,14 @@
 FROM rust:1.54 as builder
 
-RUN USER=root cargo new --bin rust-mock-api-service
-WORKDIR ./rust-mock-api-service
+RUN USER=root cargo new --bin sample-rust-api-service
+WORKDIR ./sample-rust-api-service
 COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
 RUN rm src/*.rs
 
 ADD . ./
 
-# RUN rm ./target/release/deps/rust-mock-api-service*
+# RUN rm ./target/release/deps/sample-rust-api-service*
 RUN cargo build --release
 
 
@@ -28,11 +28,11 @@ RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
-COPY --from=builder /rust-mock-api-service/target/release/rust-mock-api-service ${APP}/rust-mock-api-service
+COPY --from=builder /sample-rust-api-service/target/release/sample-rust-api-service ${APP}/sample-rust-api-service
 
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
 USER $APP_USER
 WORKDIR ${APP}
 
-CMD ["./rust-mock-api-service"]
+CMD ["./sample-rust-api-service"]
