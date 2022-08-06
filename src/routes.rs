@@ -8,8 +8,11 @@ pub fn general_routes(cfg: &mut web::ServiceConfig) {
 pub fn course_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/api")
-        .route("/public", web::get().to(fetch_cat_facts))
-        .route("/private", web::get().to(generate_message))
+        // .route("/public", web::get().to(fetch_cat_facts))
+        .route("/pokemon/{id}", web::get().to(get_pokemon))
+        .route("/echo", web::get().to(get_echo))
+        .route("/env", web::get().to(check_environment))
+        .route("/sum",web::post().to(get_sum))
     );
 
 }

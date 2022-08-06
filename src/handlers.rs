@@ -1,8 +1,8 @@
 use super::models::*;
 use super::state::AppState;
-use actix_web::{web, HttpResponse, Responder, HttpRequest};
-use std::env;
+use actix_web::{web, HttpRequest, HttpResponse, Responder};
 use serde::Serialize;
+use std::{env, fmt::format};
 
 // Health Check Handler
 pub async fn health_check(app_state: web::Data<AppState>) -> HttpResponse {
@@ -19,54 +19,80 @@ pub async fn health_check(app_state: web::Data<AppState>) -> HttpResponse {
     HttpResponse::Ok().json(&response)
 }
 
-pub async fn fetch_cat_facts() -> HttpResponse {
+pub async fn get_echo(term: web::Query<Term>) -> HttpResponse {
+    HttpResponse::Ok().json(format!("You said: {}", term.term))
+}
 
+pub async fn check_environment() -> HttpResponse {
+    let env = match env::var_os("ENV") {
+        Some(e) => e.into_string().unwrap(),
+        None => panic!("$ENV is not set"),
+    };
 
-    let url = "https://cat-fact.herokuapp.com/facts/random";
+    let valid_env = env.is_empty();
 
-    let client = reqwest::Client::new();
-
-    let response = client.get(url).send().await.unwrap();
-
-    match response.status() {
-        reqwest::StatusCode::OK => match response.json::<CatFact>().await {
-            Ok(parsed) => HttpResponse::Ok().json(parsed),
-            Err(_) => HttpResponse::BadRequest().json("Something went wrong!"),
-        },
-        other => {
-            panic!("Uh oh! Something unexpected happened: {:?}", other);
-        }
+    if valid_env == false {
+        HttpResponse::Ok().json(format!(
+            "It look like you are running in a {} environment!",
+            env
+        ))
+    } else {
+        HttpResponse::NotFound().json("Environment not set!")
     }
 }
 
-pub async fn generate_message() -> HttpResponse {
 
-    let environment = env::var("ENV").expect("ENV is not set in .env file");
+pub async fn get_sum(payload: web::Json<Sum>) -> HttpResponse {
+    let sum: i32 = payload.val_1 + payload.val_2;
+    HttpResponse::Ok().json(sum)
+}
 
-    #[derive(Serialize)]
-    struct Message {
-        text: String
+pub async fn get_pokemon(req: HttpRequest) -> HttpResponse {
+    // Parse the path parameter from the request URL
+    let id: String = req.match_info().get("id").unwrap().parse().unwrap();
+
+    // Set the url
+    let url = format!("https://pokeapi.co/api/v2/pokemon/{}", id); 
+    // println!("{}",url);
+
+    // Create a client and send the request
+    let client = reqwest::Client::new();
+    let response = client.get(url).send().await.unwrap();
+
+    // println!("{:#?}", response);
+    // let res_json = response.json::<Pokemon>().await;
+    // println!("{:#?}", res_json);
+
+    // Match condition based on status code
+    match response.status() {
+        reqwest::StatusCode::OK => match response.json::<Pokemon>().await {
+            Ok(parsed) => HttpResponse::Ok().json(parsed),
+            Err(_) => HttpResponse::BadRequest().json("Something went wrong!")
+        },
+        other => {
+            panic!("Uh oh something went really wrong! {:?}", other)
+        }
     }
-    
-    let message1 = Message {
-        text: "It looks like you don't have access to the internet! But that's ok! Everything is working here!".to_string()
-    };
+
+    // HttpResponse::Ok().json("some")
+
+}
 
 
-    let message2 = Message {
-        text: "You have access to the internet! Head over to /public endpoint and learn some facts about cats!".to_string()
-    };
-     
+// pub async fn fetch_cat_facts() -> HttpResponse {
+//     let url = "https://cat-fact.herokuapp.com/facts/random";
 
-    let env = match env::var_os("ENV") {
-        Some(e) => e.into_string().unwrap(),
-        None => panic!("$ENV is not set")
-    };  
-        
-    if env == "C2S" {
-        HttpResponse::Ok().json(message1)
-    } else {
-        HttpResponse::Ok().json(message2)
-    }
+//     let client = reqwest::Client::new();
 
- }
+//     let response = client.get(url).send().await.unwrap();
+
+//     match response.status() {
+//         reqwest::StatusCode::OK => match response.json::<CatFact>().await {
+//             Ok(parsed) => HttpResponse::Ok().json(parsed),
+//             Err(_) => HttpResponse::BadRequest().json("Something went wrong!"),
+//         },
+//         other => {
+//             panic!("Uh oh! Something unexpected happened: {:?}", other);
+//         }
+//     }
+// }

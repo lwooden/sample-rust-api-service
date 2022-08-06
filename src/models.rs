@@ -2,15 +2,10 @@ use serde_derive::{Deserialize, Serialize};
 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CatFact { 
-    // status: Status,
-    _id: String,
-    __v: i32,
-    text: String,
-    updatedAt: String,
-    createdAt: String,
-    deleted: bool,
-    user: String,
+pub struct Pokemon {
+    id: i32,
+    name: String,
+    base_experience: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -19,4 +14,14 @@ struct Status {
     sentCount: i32
 }
 
+#[derive(Deserialize)]
+pub struct Term {
+    pub term: String,
+}
+
+#[derive(Deserialize)]
+pub struct Sum {
+    pub val_1: i32,
+    pub val_2: i32,
+}
 
