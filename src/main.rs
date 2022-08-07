@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use actix_web::{web, App, HttpServer, middleware::Logger};
 use std::io;
 use std::sync::Mutex;

@@ -11,7 +11,7 @@ pub struct Pokemon {
 #[derive(Serialize, Deserialize, Debug)]
 struct Status {
     verified: bool,
-    sentCount: i32
+    sent_count: i32
 }
 
 #[derive(Deserialize)]

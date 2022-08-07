@@ -1,8 +1,7 @@
 use super::models::*;
 use super::state::AppState;
-use actix_web::{web, HttpRequest, HttpResponse, Responder};
-use serde::Serialize;
-use std::{env, fmt::format};
+use actix_web::{web, HttpRequest, HttpResponse};
+use std::{env};
 
 // Health Check Handler
 pub async fn health_check(app_state: web::Data<AppState>) -> HttpResponse {
