@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-rust-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-rust-api
+  template:
+    metadata:
+      labels:
+         app: sample-rust-api
+    spec:
+      containers:
+        - name: sample-rust-api
+          image: public.ecr.aws/mock-node-api/lowsandbox:sample-rust-api
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+          livenessProbe:
+            httpGet:
+              path: /health
+              port:  3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          envFrom:
+            - configMapRef:
+                name: dev-env
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+
