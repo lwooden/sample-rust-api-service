@@ -31,7 +31,7 @@ async fn main() -> io::Result<()> {
 
     // initialize state object and set visit count to 0
     let shared_data = web::Data::new(AppState { 
-        health_check_response: "Cat service is up and running!".to_string(),
+        health_check_response: "Sample Rust API is up and running!".to_string(),
         visit_count: Mutex::new(0),
     });
 

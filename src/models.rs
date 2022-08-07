@@ -8,6 +8,15 @@ pub struct Pokemon {
     base_experience: i32,
 }
 
+#[derive(Serialize, Debug)]
+pub struct PodMetadata {
+    pub node: String,
+    pub pod_name: String,
+    pub pod_ip: String,
+    pub pod_namespace: String,
+    pub pod_service_account: String,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 struct Status {
     verified: bool,
