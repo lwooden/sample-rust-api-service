@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rust-env
+data:
+  PORT: "3000"
+  ENV: "C2S"

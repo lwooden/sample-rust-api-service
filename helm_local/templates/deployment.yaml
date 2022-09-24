@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- if eq .Release.Namespace "default" }}
+  name: sample-rust-service
+  {{ else }}
+  name: "sample-rust-service-{{ .Release.Namespace }}"
+  {{- end }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- if eq .Release.Namespace "default" }}
+      app: sample-rust-service
+      {{ else }}
+      app: "sample-rust-service-{{ .Release.Namespace }}"
+      {{- end }}
+      version: v1
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+         {{- if eq .Release.Namespace "default"}}
+         app: sample-rust-service
+         {{ else }}
+         app: "sample-rust-service-{{ .Release.Namespace }}"
+         {{- end }}
+         version: v1
+    spec:
+      containers:
+        {{- if eq .Release.Namespace "default"}}
+        - name: sample-rust-service
+        {{ else }}
+        - name: "sample-rust-service-{{ .Release.Namespace }}"
+        {{- end }}
+          image: {{ .Values.image.repository }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMap.name }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port }}
+
